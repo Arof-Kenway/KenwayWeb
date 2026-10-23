@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kenway - Pusat Kendali Artileri</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+        <symbol id="iron-cross" viewBox="0 0 100 100">
+            <polygon points="30,6 70,6 60,40 94,30 94,70 60,60 70,94 30,94 40,60 6,70 6,30 40,40" fill="#14110e" stroke="#e6dcc3" stroke-width="4" stroke-linejoin="round"/>
+            <polygon points="35,13 65,13 56,44 87,35 87,65 56,56 65,87 35,87 44,56 13,65 13,35 44,44" fill="none" stroke="#e6dcc3" stroke-width="1.5" opacity=".55"/>
+        </symbol>
+    </defs>
+</svg>
+
+<header class="masthead">
+    <div class="masthead__inner">
+        <div class="brand">
+            <span class="brand__badge" aria-hidden="true"><svg viewBox="0 0 100 100"><use href="#iron-cross"/></svg></span>
+            <span class="brand__name">Kenway</span>
+        </div>
+        <nav class="tabs" aria-label="Modul">
+            <button class="tab is-active" data-target="mod-elev" type="button">Elevation Calculator</button>
+            <button class="tab" data-target="mod-next" type="button">To be continued</button>
+        </nav>
+    </div>
+</header>
+
+<main>
+    <section class="hero">
+        <svg class="hero__cross" viewBox="0 0 100 100" aria-hidden="true"><use href="#iron-cross"/></svg>
+        <h1 class="hero__title">Kenway<br>Fire Control</h1>
+        <p class="hero__de">Feuerleitstelle</p>
+    </section>
+
+    <div class="stripe" aria-hidden="true"></div>
+
+    <!-- MODUL 1 -->
+    <section id="mod-elev" class="module is-active">
+        <div class="plate">
+            <h2 class="plate__title">Elevation Calculator</h2>
+
+            <div class="grid">
+                <form class="panel inputs" id="calc" novalidate autocomplete="off">
+                    <div class="field">
+                        <label for="dist">Distance (km) <span class="de">Entfernung</span></label>
+                        <input id="dist" type="text" inputmode="decimal" value="12,50" aria-describedby="dist-hint dist-err">
+                        <p class="hint" id="dist-hint">00,00 - 30,00 km. 1 Charge = 05,00 km. <strong id="range-now"></strong></p>
+                        <p class="err" id="dist-err" role="alert"></p>
+                    </div>
+
+                    <fieldset class="field">
+                        <legend>Charges Powder <span class="de">Treibladung</span></legend>
+                        <div class="charges" id="charges"></div>
+                    </fieldset>
+
+                    <div class="field">
+                        <label for="brg">Bearing Turret (derajat) <span class="de">Seitenrichtung</span></label>
+                        <input id="brg" type="text" inputmode="decimal" value="090,0" aria-describedby="brg-hint brg-err">
+                        <p class="hint" id="brg-hint">000,0° - 360,0°.</p>
+                        <p class="err" id="brg-err" role="alert"></p>
+                    </div>
+
+                    <fieldset class="field">
+                        <legend>Jenis Ammo Shell <span class="de">Granatsorte</span></legend>
+                        <div class="ammo" id="ammo"></div>
+                    </fieldset>
+
+                    <div class="actions">
+                        <button type="submit" class="btn btn--go" id="calc-btn">Hitung Elevasi <span class="de">Berechnen</span></button>
+                    </div>
+                </form>
+
+                <div class="panel results" id="results" aria-live="polite">
+                    <h3 class="panel__title">Hasil tembak <span class="de">Schusswerte</span></h3>
+                    <p class="stamp" id="stamp">Feuerbereit</p>
+
+                    <dl class="readout">
+                        <div class="readout__main">
+                            <dt>Elevasi <span class="de">Erhöhung</span></dt>
+                            <dd><span id="out-elev">00,00</span>°</dd>
+                        </div>
+                        <div>
+                            <dt>Bearing Turret <span class="de">Seitenrichtung</span></dt>
+                            <dd><span id="out-brg">000,0</span>°</dd>
+                        </div>
+                        <div>
+                            <dt>Ammo Shell <span class="de">Granate</span></dt>
+                            <dd id="out-ammo">HE</dd>
+                        </div>
+                    </dl>
+
+                    <p class="formula">Elevasi = (Distance km × 12) / Charges Powder. Turret Elevation = 00,00° - 60,00°.</p>
+                    <p class="warn" id="warn" role="alert"></p>
+
+                    <button type="button" class="btn" id="copy">Salin hasil</button>
+                </div>
+
+                <div class="panel sims">
+                    <h3 class="panel__title">Simulasi turret <span class="de">Zwillingsturm</span></h3>
+                    <div class="sims__row">
+                        <figure class="sim">
+                            <svg id="side" viewBox="0 20 1420 680" role="img" aria-label="Tampak samping turret Bismarck dua laras dengan sudut elevasi">
+                                <defs>
+                                    <pattern id="hatch" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="10" stroke="#4a1b1d" stroke-width="3"/></pattern>
+                                    <radialGradient id="sky" cx=".25" cy=".7" r=".9"><stop offset="0" stop-color="#3a1417"/><stop offset="1" stop-color="#17191a"/></radialGradient>
+                                    <filter id="dim" x="-5%" y="-5%" width="110%" height="110%"><feColorMatrix type="matrix" values=".5 0 0 0 0  0 .45 0 0 0  0 0 .47 0 0  0 0 0 1 0"/></filter>
+                                    <polygon id="flash-shape" points="0,-16 14,-32 12,-8 42,-14 20,0 46,12 14,10 8,36 0,14 -14,32 -10,6 -36,0 -12,-6" fill="#ffd27a" stroke="#e24a4f" stroke-width="3"/>
+                                </defs>
+
+                                <rect x="0" y="20" width="1420" height="680" fill="url(#sky)"/>
+                                <rect x="0" y="676" width="1420" height="24" fill="url(#hatch)" opacity=".9"/>
+                                <line x1="0" y1="676" x2="1420" y2="676" stroke="#c1272d" stroke-width="5"/>
+                                <g id="side-scale"></g>
+                                <path id="traj" d="" fill="none" stroke="#e8b04a" stroke-width="4" stroke-dasharray="14 11"/>
+
+                                <!-- dua laras: berputar di poros (620,600), berada di belakang hull -->
+                                <g id="barrel" style="transform:translate(620px,600px) rotate(0deg)">
+                                    <g id="slide">
+                                        <image href="assets/gun.png" x="-63.5" y="-68.3" width="493.2" height="85.05" filter="url(#dim)"/>
+                                        <image href="assets/gun.png" x="-54.5" y="-42.3" width="493.2" height="85.05"/>
+                                    </g>
+                                    <g transform="translate(442,0)"><use href="#flash-shape" class="flash"/></g>
+                                    <g transform="translate(433,-26)"><use href="#flash-shape" class="flash"/></g>
+                                </g>
+                                <!-- turret Bismarck (gambar pengguna), duduk di tanah -->
+                                <image href="assets/hull.png" x="55.25" y="487.5" width="574.65" height="188.55"/>
+
+                                <text id="side-label" x="40" y="110" class="svg-num" text-anchor="start">0°</text>
+                            </svg>
+                            <figcaption>Tampak samping: sudut elevasi kedua laras</figcaption>
+                        </figure>
+
+                        <figure class="sim sim--top">
+                            <svg id="top" viewBox="0 0 300 300" role="img" aria-label="Tampak atas turret Bismarck dua laras dengan arah bearing">
+                                <circle cx="150" cy="150" r="128" fill="#1a1112" stroke="#c1272d" stroke-width="5"/>
+                                <circle cx="150" cy="150" r="104" fill="none" stroke="#4a2326" stroke-width="1.5"/>
+                                <use href="#iron-cross" x="70" y="70" width="160" height="160" opacity=".14"/>
+                                <g id="top-ticks"></g>
+
+                                <!-- cincin dudukan turret (diam) -->
+                                <circle cx="150" cy="150" r="52" fill="#2a2d30" stroke="#14110e" stroke-width="4"/>
+                                <circle cx="150" cy="150" r="45" fill="#1f2123" stroke="#5a1d21" stroke-width="3"/>
+
+                                <!-- turret Bismarck tampak atas (gambar pengguna), berputar sesuai bearing -->
+                                <g id="top-dir" style="transform-origin:150px 150px">
+                                    <image href="assets/top.png" x="116.4" y="34" width="67.2" height="160.8"/>
+                                    <path d="M150 12 L141 30 L159 30 Z" fill="#e24a4f"/>
+                                </g>
+                                <circle cx="150" cy="150" r="5" fill="#b8893a" stroke="#14110e" stroke-width="2"/>
+                            </svg>
+                            <figcaption>Tampak atas: arah bearing (N, O, S, W) <span id="top-label">000,0°</span></figcaption>
+                        </figure>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- MODUL 2 -->
+    <section id="mod-next" class="module">
+        <div class="plate plate--locked">
+            <h2 class="plate__title">To be continued</h2>
+            <p class="locked__text">Belum ada modul di slot ini. Ide berikutnya akan dipasang di sini, tab dan tata letaknya sudah siap.</p>
+        </div>
+    </section>
+</main>
+
+<footer class="foot">
+    <svg class="foot__cross" viewBox="0 0 100 100" aria-hidden="true"><use href="#iron-cross"/></svg>
+    <p>© 2026 Arof Kenway. All Rights Reserved.</p>
+</footer>
+
+<!-- PEMUTAR BGM: piringan hitam -->
+<aside class="deck" id="deck" aria-label="Pemutar musik latar">
+    <div class="crate" id="crate" hidden>
+        <div class="crate__head">
+            <span class="crate__title">Pilih piringan <span class="de">Schallplatten</span></span>
+            <div class="crate__nav">
+                <button type="button" class="rbtn rbtn--ghost" id="c-prev" aria-label="Geser ke kiri"><svg viewBox="0 0 24 24" width="16" height="16"><path d="M15 5l-8 7 8 7" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+                <button type="button" class="rbtn rbtn--ghost" id="c-next" aria-label="Geser ke kanan"><svg viewBox="0 0 24 24" width="16" height="16"><path d="M9 5l8 7-8 7" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+                <button type="button" class="rbtn rbtn--ghost" id="c-add">Tambah file</button>
+                <button type="button" class="rbtn rbtn--ghost" id="c-close">Tutup</button>
+            </div>
+        </div>
+        <div class="crate__row" id="crate-row" role="listbox" aria-label="Daftar piringan" tabindex="-1"></div>
+        <p class="crate__empty" id="crate-empty" hidden>Belum ada lagu. Taruh file audio di folder <strong>music</strong>, jalankan <strong>update-playlist</strong>, atau pakai tombol Tambah file.</p>
+    </div>
+
+    <button type="button" class="rbtn deck__hide" id="d-hide" aria-expanded="true" aria-controls="deck">Sembunyikan <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M5 9l7 7 7-7" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <div class="deck__bar">
+        <div class="turntable" id="turntable">
+            <div class="platter" id="platter">
+                <div class="vinyl" id="vinyl"><span class="vinyl__label"><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#iron-cross"/></svg></span></div>
+            </div>
+            <svg class="tonearm" id="tonearm" viewBox="0 0 100 140" aria-hidden="true">
+                <circle cx="78" cy="26" r="16" fill="#3a3e41" stroke="#14110e" stroke-width="4"/>
+                <circle cx="78" cy="26" r="6" fill="#b8893a"/>
+                <path d="M78 26 L30 108" stroke="#14110e" stroke-width="11" stroke-linecap="round"/>
+                <path d="M78 26 L30 108" stroke="#8d9296" stroke-width="5" stroke-linecap="round"/>
+                <rect x="14" y="100" width="26" height="18" rx="3" transform="rotate(-30 27 109)" fill="#c1272d" stroke="#14110e" stroke-width="3"/>
+            </svg>
+        </div>
+
+        <div class="deck__info">
+            <span class="deck__title" id="d-title">Belum ada lagu</span>
+            <span class="deck__sub" id="d-sub">Feldradio</span>
+            <label class="deck__seek"><span class="sr">Posisi lagu</span><input type="range" id="d-seek" min="0" max="0" step="1" value="0"></label>
+            <span class="deck__time" id="d-time">0:00 / 0:00</span>
+        </div>
+
+        <div class="deck__ctrls">
+            <button type="button" class="rbtn rbtn--icon" id="d-prev" aria-label="Lagu sebelumnya"><svg viewBox="0 0 24 24"><path d="M6 5h3v14H6zM20 5v14L10 12z" fill="currentColor"/></svg></button>
+            <button type="button" class="rbtn rbtn--icon rbtn--play" id="d-play" aria-label="Putar"><svg viewBox="0 0 24 24"><path id="d-play-ico" d="M7 4v16l13-8z" fill="currentColor"/></svg></button>
+            <button type="button" class="rbtn rbtn--icon" id="d-next" aria-label="Lagu berikutnya"><svg viewBox="0 0 24 24"><path d="M15 5h3v14h-3zM4 5v14l10-7z" fill="currentColor"/></svg></button>
+        </div>
+
+        <div class="deck__side">
+            <div class="dial" id="d-dial" role="slider" tabindex="0" aria-label="Volume" aria-valuemin="0" aria-valuemax="100" aria-valuenow="60" aria-valuetext="60 persen" title="Geser knob untuk volume. Klik tengah untuk senyap.">
+                <svg viewBox="0 0 200 120" aria-hidden="true">
+                    <path d="M4 104 A96 96 0 0 1 196 104 L196 114 Q196 118 192 118 L8 118 Q4 118 4 114 Z" fill="#9aa89a" stroke="#14110e" stroke-width="3"/>
+                    <path d="M10 104 A90 90 0 0 1 190 104" fill="none" stroke="#c4d0c3" stroke-width="2" opacity=".7"/>
+                    <path d="M14 104 A86 86 0 0 1 186 104 L164 104 A64 64 0 0 0 36 104 Z" fill="#3a3532" stroke="#14110e" stroke-width="2"/>
+                    <path d="M36 104 A64 64 0 0 1 164 104 L144 104 A44 44 0 0 0 56 104 Z" fill="#7d6c52" stroke="#14110e" stroke-width="2"/>
+                    <path id="d-level" d="M46 104 A54 54 0 0 1 154 104" pathLength="100" fill="none" stroke="#c9a85f" stroke-width="18" stroke-dasharray="60 100"/>
+                    <circle cx="100" cy="104" r="42" fill="#b6c2b5" stroke="#14110e" stroke-width="3"/>
+                    <circle cx="100" cy="104" r="36" fill="none" stroke="#e1e9e0" stroke-width="2" opacity=".7"/>
+                    <g fill="#3a3532">
+                        <rect x="91" y="76" width="3" height="21"/><rect x="107" y="73" width="3" height="21"/>
+                        <polygon points="91,76 110,73 110,78 91,81"/>
+                        <ellipse cx="88" cy="98" rx="6.5" ry="4.6" transform="rotate(-22 88 98)"/>
+                        <ellipse cx="104" cy="95" rx="6.5" ry="4.6" transform="rotate(-22 104 95)"/>
+                    </g>
+                    <g id="d-waves" fill="none" stroke="#3a3532" stroke-width="3" stroke-linecap="round">
+                        <path d="M119 88 Q125 96 119 104"/><path d="M127 83 Q136 96 127 109"/>
+                    </g>
+                    <path id="d-mute" d="M118 82 L132 108" stroke="#c1272d" stroke-width="4" stroke-linecap="round" opacity="0"/>
+                    <g id="d-knob" style="transform-origin:100px 104px">
+                        <polygon points="13,104 32,94 32,114" fill="#c1272d" stroke="#14110e" stroke-width="2.5" stroke-linejoin="round"/>
+                        <circle cx="36" cy="104" r="11.5" fill="#c1272d" stroke="#14110e" stroke-width="3"/>
+                        <circle cx="32.5" cy="100.5" r="3.5" fill="#f08a8e" opacity=".85"/>
+                    </g>
+                    <circle cx="14" cy="112" r="3.5" fill="#6b7a6b" stroke="#14110e" stroke-width="1.5"/><circle cx="186" cy="112" r="3.5" fill="#6b7a6b" stroke="#14110e" stroke-width="1.5"/>
+                </svg>
+            </div>
+            <div class="deck__btns">
+                <button type="button" class="rbtn rbtn--ghost" id="d-loop">Ulang: semua</button>
+                <button type="button" class="rbtn rbtn--main" id="d-open" aria-expanded="false" aria-controls="crate">Ganti lagu</button>
+            </div>
+        </div>
+    </div>
+    <button type="button" class="deck__show" id="d-show" aria-label="Buka pemutar musik" aria-expanded="false" aria-controls="deck">
+        <span class="vinyl vinyl--mini"><span class="vinyl__label"><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#iron-cross"/></svg></span></span>
+    </button>
+    <p class="sr" id="d-status" role="status" aria-live="polite"></p>
+    <audio id="d-audio" preload="metadata"></audio>
+    <input type="file" id="d-file" accept="audio/*,.mp3,.ogg,.wav,.m4a,.flac,.aac,.opus" multiple hidden>
+</aside>
+
+<script src="music/playlist.js"></script>
+<script src="script.js"></script>
+<script src="music.js"></script>
+</body>
+</html>
