@@ -35,6 +35,7 @@
         <svg class="hero__cross" viewBox="0 0 100 100" aria-hidden="true"><use href="#iron-cross"/></svg>
         <h1 class="hero__title">Kenway<br>Fire Control</h1>
         <p class="hero__de">Feuerleitstelle</p>
+        <p class="hero__text">Perangkat bantu lapangan untuk pasukan artileri. Masukkan jarak, muatan bubuk, arah menara, dan jenis peluru, tekan tombol hitung, lalu baca sudut elevasi yang siap dikirim ke regu.</p>
     </section>
 
     <div class="stripe" aria-hidden="true"></div>
@@ -49,7 +50,7 @@
                     <div class="field">
                         <label for="dist">Distance (km) <span class="de">Entfernung</span></label>
                         <input id="dist" type="text" inputmode="decimal" value="12,50" aria-describedby="dist-hint dist-err">
-                        <p class="hint" id="dist-hint">00,00 - 30,00 km. 1 Charge = 05,00 km. <strong id="range-now"></strong></p>
+                        <p class="hint" id="dist-hint">00,00 sampai 30,00 km. Ketik angkanya saja, koma terisi sendiri (1250 menjadi 12,50). Tiap 1 Charges Powder menjangkau 05,00 km. <strong id="range-now"></strong></p>
                         <p class="err" id="dist-err" role="alert"></p>
                     </div>
 
@@ -61,7 +62,7 @@
                     <div class="field">
                         <label for="brg">Bearing Turret (derajat) <span class="de">Seitenrichtung</span></label>
                         <input id="brg" type="text" inputmode="decimal" value="090,0" aria-describedby="brg-hint brg-err">
-                        <p class="hint" id="brg-hint">000,0° - 360,0°.</p>
+                        <p class="hint" id="brg-hint">000,0 sampai 360,0 derajat. Utara = 000,0 searah jarum jam. Ketik angkanya saja (2250 menjadi 225,0).</p>
                         <p class="err" id="brg-err" role="alert"></p>
                     </div>
 
@@ -72,6 +73,7 @@
 
                     <div class="actions">
                         <button type="submit" class="btn btn--go" id="calc-btn">Hitung Elevasi <span class="de">Berechnen</span></button>
+                        <p class="hint">Hasil dan simulasi baru berubah setelah tombol ini ditekan atau tombol Enter.</p>
                     </div>
                 </form>
 
@@ -83,6 +85,7 @@
                         <div class="readout__main">
                             <dt>Elevasi <span class="de">Erhöhung</span></dt>
                             <dd><span id="out-elev">00,00</span>°</dd>
+                            <dd class="readout__sub" id="out-note">Batas elevasi turret 00,00° sampai 60,00°</dd>
                         </div>
                         <div>
                             <dt>Bearing Turret <span class="de">Seitenrichtung</span></dt>
@@ -94,7 +97,7 @@
                         </div>
                     </dl>
 
-                    <p class="formula">Elevasi = (Distance km × 12) / Charges Powder. Turret Elevation = 00,00° - 60,00°.</p>
+                    <p class="formula">Elevasi = (Distance km × 12) / Charges Powder. Elevasi turret hanya 00,00° sampai 60,00°.</p>
                     <p class="warn" id="warn" role="alert"></p>
 
                     <button type="button" class="btn" id="copy">Salin hasil</button>
@@ -172,7 +175,7 @@
 
 <footer class="foot">
     <svg class="foot__cross" viewBox="0 0 100 100" aria-hidden="true"><use href="#iron-cross"/></svg>
-    <p>© 2026 Arof Kenway. All Rights Reserved.</p>
+    <p>Kenway Feuerleitstelle. Karya fiksi bergaya dieselpunk dengan nuansa Jerman era Perang Dunia II. Font tebal Evil Empire (SIL Open Font License, lisensi ada di folder font).</p>
 </footer>
 
 <!-- PEMUTAR BGM: piringan hitam -->
